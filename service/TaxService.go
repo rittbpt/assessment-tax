@@ -2,10 +2,9 @@ package service
 
 import (
 	"math"
-	_ "log"
-	"github.com/rittbpt/assessment-tax/repository"
 	"github.com/rittbpt/assessment-tax/Request"
 	"github.com/rittbpt/assessment-tax/Respone"
+	"github.com/rittbpt/assessment-tax/repository"
 )
 
 type TaxService struct {
@@ -143,4 +142,24 @@ func (s *TaxService) Cal(requestBody request.TaxRequest) (respone.TaxResponse, e
 	}
 	response := calculateTax(float64(requestBody.TotalIncome), float64(deduct[0].Persernal_Deduct), requestBody.WHT, requestBody.Allowances, float64(deduct[0].K_Reciept_Deduct))
 	return response, nil
+}
+
+func (s *TaxService) CalCSV(requestBody []request.TaxRequest) ([]respone.TaxData, error) {
+	deduct, err := s.TaxRepo.GetTaxData()
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]respone.TaxData, len(requestBody))
+
+	for i := range requestBody {
+		response := calculateTax(float64(requestBody[i].TotalIncome), float64(deduct[0].Persernal_Deduct), requestBody[i].WHT, requestBody[i].Allowances, float64(deduct[0].K_Reciept_Deduct))
+
+		result[i] = respone.TaxData{
+			TotalIncome: requestBody[i].TotalIncome,
+			Tax:         response.Tax,
+			TaxRefund : response.TaxRefund ,
+		}
+	}
+	return result, nil
 }

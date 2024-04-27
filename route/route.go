@@ -22,5 +22,6 @@ func TaxRoutes(e *echo.Echo , c *controller.TaxController) {
 
 	taxRouter := e.Group("/tax")
 	taxRouter.POST("/calculations", c.Cal)
+	taxRouter.POST("/calculations/upload-csv", c.CalCSV)
 
 }
