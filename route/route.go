@@ -18,7 +18,7 @@ func TaxRoutes(e *echo.Echo , c *controller.TaxController) {
 
 	TaxRoutes := e.Group("/admin/deductions")
 	TaxRoutes.POST("/personal" , c.ChangeDp)
-
+	TaxRoutes.POST("/k-receipt" , c.ChangeDk)
 
 	taxRouter := e.Group("/tax")
 	taxRouter.POST("/calculations", c.Cal)

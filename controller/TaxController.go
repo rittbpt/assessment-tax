@@ -1,14 +1,15 @@
 package controller
 
 import (
-	"net/http"
-	"github.com/labstack/echo/v4"
-	"github.com/rittbpt/assessment-tax/Request"
-	"github.com/rittbpt/assessment-tax/Respone"
-	"github.com/rittbpt/assessment-tax/service"
 	"encoding/csv"
 	"log"
+	"net/http"
 	"strconv"
+
+	"github.com/labstack/echo/v4"
+	"github.com/rittbpt/assessment-tax/Request"
+	"github.com/rittbpt/assessment-tax/Response"
+	"github.com/rittbpt/assessment-tax/service"
 )
 
 type TaxController struct {
@@ -28,6 +29,19 @@ func (t *TaxController) ChangeDp(c echo.Context) error {
 	}
 
 	result, err := t.TaxService.ChangeDp(requestBody.Amount)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "Failed to get tax data: "+err.Error())
+	}
+	return c.JSON(http.StatusOK, result)
+}
+
+func (t *TaxController) ChangeDk(c echo.Context) error {
+	var requestBody request.K_recieptDeduct
+	if err := c.Bind(&requestBody); err != nil {
+		return c.String(http.StatusBadRequest, "Invalid request body")
+	}
+
+	result, err := t.TaxService.ChangeDk(requestBody.Amount)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "Failed to get tax data: "+err.Error())
 	}
@@ -92,7 +106,7 @@ func (t *TaxController) CalCSV(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Failed to get tax data: "+err.Error())
 	}
 
-	result := respone.TaxCSVResponse{Taxes: taxData}
+	result := response.TaxCSVResponse{Taxes: taxData}
 
 	// return c.JSON(http.StatusOK, taxData)
 	return c.JSON(http.StatusOK, result)

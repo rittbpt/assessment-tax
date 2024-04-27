@@ -1,6 +1,6 @@
-package respone
+package response
 
-import "github.com/rittbpt/assessment-tax/Request"
+import request "github.com/rittbpt/assessment-tax/Request"
 
 type TaxResponse struct {
 	Tax       float64             `json:"tax"`
@@ -17,4 +17,12 @@ type TaxData struct {
 
 type TaxCSVResponse struct {
 	Taxes []TaxData `json:"taxes"`
+}
+
+type UpdateP struct {
+	PersonalDeduction float64 `json:"personalDeduction"`
+}
+
+type UpdateK struct {
+	KReceipt float64 `json:"kReceipt"`
 }

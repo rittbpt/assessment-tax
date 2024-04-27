@@ -17,7 +17,9 @@ type TaxLevel struct {
 	Tax   float64 `json:"tax"`
 }
 
-
 type PersernalDeduct struct {
+	Amount float64  `json:"amount"`
+}
+type K_recieptDeduct struct {
 	Amount float64  `json:"amount"`
 }
