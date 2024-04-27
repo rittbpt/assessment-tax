@@ -1,7 +1,7 @@
 package service
 
 import (
-	_ "log"
+	"log"
 	"math"
 	"github.com/rittbpt/assessment-tax/repository"
 	"github.com/rittbpt/assessment-tax/Request"
@@ -12,7 +12,7 @@ type TaxService struct {
 }
 
 
-func calculations(totalIncome float64, personalDeduct float64 , wht float64) float64 {
+func calculations(totalIncome float64, personalDeduct float64 , wht float64 , allowances []request.Allowance  ,kDeduct float64) float64 {
 	taxTable := []struct {
 		min float64
 		max float64
@@ -45,8 +45,21 @@ func calculations(totalIncome float64, personalDeduct float64 , wht float64) flo
 		},
 	}
 
+	allowanceTable := map[string]float64{
+		"donation": 100000.0,
+		"k-receipt": kDeduct,
+	}
+
 	var pay float64
 	dummyIncome := totalIncome - personalDeduct
+
+	for _, allowance := range allowances {
+		if (allowanceTable[allowance.AllowanceType] > allowance.Amount) {
+			dummyIncome -= allowance.Amount
+		}else {
+			dummyIncome -= allowanceTable[allowance.AllowanceType]
+		}
+	}
 
 	for i := len(taxTable) - 1; i >= 0; i-- {
 		if taxTable[i].max >= dummyIncome && taxTable[i].min <= dummyIncome {
@@ -56,10 +69,10 @@ func calculations(totalIncome float64, personalDeduct float64 , wht float64) flo
 			pay += float64(taxTable[i].max-taxTable[i].min - 1) * taxTable[i].per
 		}
 	}
-	
+
 	pay -= wht
 
-	return pay
+	return math.Round(pay*10)/10
 }
 
 func NewTaxService(repo *repository.TaxRepository) *TaxService {
@@ -70,9 +83,10 @@ func NewTaxService(repo *repository.TaxRepository) *TaxService {
 
 func (s *TaxService) Cal(requestBody request.TaxRequest) (float64, error) {
     deduct, err := s.TaxRepo.GetTaxData()
+	log.Println(deduct)
     if err != nil {
         return 0.0, err
     }
-    pay := calculations(float64(requestBody.TotalIncome), float64(deduct[0].Persernal_Deduct) , requestBody.WHT)
+    pay := calculations(float64(requestBody.TotalIncome), float64(deduct[0].Persernal_Deduct) , requestBody.WHT , requestBody.Allowances , float64(deduct[0].K_Reciept_Deduct))
     return pay, nil
 }

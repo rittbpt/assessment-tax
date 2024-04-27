@@ -34,8 +34,9 @@ func (t *TaxController) Cal(c echo.Context) error {
 	}
 
 	response := respone.TaxResponse{
-		Tax: float64(taxData),
+		Tax: taxData,
 	}
+
 
 	log.Println(reflect.TypeOf(response.Tax) , response.Tax)
 	return c.JSON(http.StatusOK, response)
