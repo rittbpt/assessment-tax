@@ -3,7 +3,6 @@ package controller
 import (
 	"net/http"
 	"github.com/labstack/echo/v4"
-	"github.com/rittbpt/assessment-tax/Respone"
 	"github.com/rittbpt/assessment-tax/Request"
 	"github.com/rittbpt/assessment-tax/service"
 	"log"	
@@ -33,11 +32,7 @@ func (t *TaxController) Cal(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Failed to get tax data: "+err.Error())
 	}
 
-	response := respone.TaxResponse{
-		Tax: taxData,
-	}
 
-
-	log.Println(reflect.TypeOf(response.Tax) , response.Tax)
-	return c.JSON(http.StatusOK, response)
+	// log.Println(reflect.TypeOf(response.Tax) , response.Tax)
+	return c.JSON(http.StatusOK, taxData)
 }
