@@ -12,7 +12,7 @@ type TaxService struct {
 }
 
 
-func calculations(totalIncome float64, personalDeduct float64) float64 {
+func calculations(totalIncome float64, personalDeduct float64 , wht float64) float64 {
 	taxTable := []struct {
 		min float64
 		max float64
@@ -57,6 +57,8 @@ func calculations(totalIncome float64, personalDeduct float64) float64 {
 		}
 	}
 	
+	pay -= wht
+
 	return pay
 }
 
@@ -71,6 +73,6 @@ func (s *TaxService) Cal(requestBody request.TaxRequest) (float64, error) {
     if err != nil {
         return 0.0, err
     }
-    pay := calculations(float64(requestBody.TotalIncome), float64(deduct[0].Persernal_Deduct))
+    pay := calculations(float64(requestBody.TotalIncome), float64(deduct[0].Persernal_Deduct) , requestBody.WHT)
     return pay, nil
 }
