@@ -5,8 +5,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/rittbpt/assessment-tax/Request"
 	"github.com/rittbpt/assessment-tax/service"
-	"log"	
-	"reflect"
 )
 
 type TaxController struct {
@@ -19,6 +17,19 @@ func NewTaxController(taxService *service.TaxService) *TaxController {
 	}
 }
 
+func (t *TaxController) ChangeDp(c echo.Context) error {
+	var requestBody request.PersernalDeduct
+	if err := c.Bind(&requestBody); err != nil {
+		return c.String(http.StatusBadRequest, "Invalid request body")
+	}
+
+	result, err := t.TaxService.ChangeDp(requestBody.Amount)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "Failed to get tax data: "+err.Error())
+	}
+	return c.JSON(http.StatusOK, result)
+}
+
 func (t *TaxController) Cal(c echo.Context) error {
 	var requestBody request.TaxRequest
 
@@ -27,12 +38,9 @@ func (t *TaxController) Cal(c echo.Context) error {
 	}
 
 	taxData, err := t.TaxService.Cal(requestBody)
-	log.Println(reflect.TypeOf(taxData))
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "Failed to get tax data: "+err.Error())
 	}
 
-
-	// log.Println(reflect.TypeOf(response.Tax) , response.Tax)
 	return c.JSON(http.StatusOK, taxData)
 }

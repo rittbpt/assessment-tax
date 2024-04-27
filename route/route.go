@@ -9,7 +9,6 @@ import (
 
 
 func TaxRoutes(e *echo.Echo , c *controller.TaxController) {
-	taxRouter := e.Group("/tax")
 	// taxRouter.Use(middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
 	// 	if username == os.Getenv("ADMIN_USERNAME") && password == os.Getenv("ADMIN_PASSWORD") {
 	// 		return true, nil
@@ -17,5 +16,11 @@ func TaxRoutes(e *echo.Echo , c *controller.TaxController) {
 	// 	return false, nil
 	// }))
 
+	TaxRoutes := e.Group("/admin/deductions")
+	TaxRoutes.POST("/personal" , c.ChangeDp)
+
+
+	taxRouter := e.Group("/tax")
 	taxRouter.POST("/calculations", c.Cal)
+
 }

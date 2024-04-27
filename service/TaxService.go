@@ -119,6 +119,23 @@ func calculateTax(totalIncome float64, personalDeduct float64, wht float64, allo
 	return taxResponse
 }
 
+func (s *TaxService) ChangeDp(amount float64) (string, error) {
+	if amount > 100000 {
+		return "ค่าลดหย่อนส่วนตัวห้ามเกิน 100,000" , nil
+	}
+
+	if amount < 10000 {
+		return "ค่าลดหย่อนส่วนตัวต้องมีค่ามากกว่า 10,000" , nil
+	}
+
+	result, err := s.TaxRepo.ChangeDp(amount)
+	if err != nil {
+		return "", err
+	}
+	return result , nil
+}
+
+
 func (s *TaxService) Cal(requestBody request.TaxRequest) (respone.TaxResponse, error) {
 	deduct, err := s.TaxRepo.GetTaxData()
 	if err != nil {
