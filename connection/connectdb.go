@@ -5,10 +5,11 @@ import (
 	"log"
 
 	_ "github.com/lib/pq"
+    "os"
 )
 
 func ConnectDB() (*sql.DB, error) {
-	db, err := sql.Open("postgres", "user=postgres password=postgres dbname=ktaxes sslmode=disable")
+	db, err := sql.Open("postgres",os.Getenv("DATABASE_URL"))
 	if err != nil {
 		return nil, err
 	}

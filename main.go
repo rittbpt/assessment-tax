@@ -8,7 +8,13 @@ import (
 	"github.com/rittbpt/assessment-tax/service"
 	"github.com/rittbpt/assessment-tax/connection"
 	"github.com/rittbpt/assessment-tax/route"
+	"os"
+	"os/signal"
+	"time"
+	"context"
+	"net/http"
 )
+
 
 func main() {
 	// เตรียมฐานข้อมูล
@@ -36,6 +42,24 @@ func main() {
 	// กำหนดเส้นทางของ API
 	route.TaxRoutes(e, taxController)
 
-	// เริ่มต้นเซิร์ฟเวอร์
-	e.Logger.Fatal(e.Start(":8080"))
+	go func() {
+		if err := e.Start(":" + os.Getenv("PORT")); err != nil && err != http.ErrServerClosed {
+			e.Logger.Fatalf("Failed to start server: %s", err)
+		}
+	}()
+
+
+
+	quit := make(chan os.Signal)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := e.Shutdown(ctx); err != nil {
+		e.Logger.Fatalf("Server shutdown error: %s", err)
+	}
+
+	e.Logger.Print("Server gracefully stopped")
 }
